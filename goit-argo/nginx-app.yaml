@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-app
+  namespace: infra-tools
+spec:
+  project: default
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    chart: nginx
+    targetRevision: 18.2.5
+    helm:
+      values: |
+        service:
+          type: ClusterIP
+        persistence:
+          enabled: false
+        
+        image:
+          tag: latest
+          pullPolicy: Always
+        
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: my-app-ns
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
